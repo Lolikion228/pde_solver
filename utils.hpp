@@ -3,12 +3,13 @@
 const int MAX_DIM = 8; 
 
 class Point{
-    private:
-        int dim;
-        double cords[MAX_DIM];
-
     public:
+        int dim;
+
+        double cords[MAX_DIM]{};
+
         Point(int _dim): dim(_dim) {};
+        Point(int _dim, int i, double t): dim(_dim) {cords[i]=t;};
 
         Point(const Point& p){
             dim = p.dim;
@@ -28,3 +29,7 @@ class Point{
         }
 };
 
+double cut(double f(Point), Point x, int i, double t){
+    Point e(x.dim, i, t);
+    return f(x + e);
+}
