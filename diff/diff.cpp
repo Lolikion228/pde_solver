@@ -1,6 +1,4 @@
 #include "diff.h"
-#include "utils.hpp"
-#include <functional>
 
 double df(std::function<double(double)> f,  double x, double h){
     return (f(x + h) - f(x - h)) / (2 * h);
