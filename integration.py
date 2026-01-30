@@ -1,11 +1,12 @@
 import numpy as np
 
 class Domain:
-    def __init__(self, x1, x2, indicator, gamma):
-        # what if x1[i] > x2[i] for some i?
+    def __init__(self, x1, x2, indicator, gamma, a, b):
         self.x1 = x1
         self.x2 = x2
         self.indicator = indicator
+        self.a = a
+        self.b = b
         self.gamma = gamma
 
 
@@ -25,3 +26,10 @@ def mc_int(G, f, n):
     mask = G.indicator(x)
     vals = f(x) * mask
     return vol * np.mean(vals)
+
+
+def check_boundary_cond(f1, f2, G, n):
+    x = np.random.uniform(G.a, G.b, n)
+    path = G.gamma(x)
+    delta = f1(path) - f2(path)
+    return (G.b - G.a) * np.mean(delta**2)
