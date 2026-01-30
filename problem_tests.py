@@ -1,8 +1,34 @@
 from env import *
 import matplotlib.pyplot as plt
+import keras
+from keras._tf_keras.keras.layers import *
+from env import *
+
+
+
+
+def train_step(model, opt, problem):
+    with tf.GradientTape() as tape:
+        loss = problem.compute_loss(model)
+    gradients = tape.gradient(loss, model.trainable_weights)
+    opt.apply_gradients(zip(model.trainable_weights, gradients))
+    return loss
+
 
 
 def test1():
+
+    model = keras.Sequential([
+        Input(shape=(2,)),
+        Dense(16, activation="tanh"),
+        Dense(64, activation="tanh"),
+        Dense(16, activation="tanh"),
+        Dense(1)
+    ])
+
+    opt = keras.optimizers.SGD(1e-3)
+    
+
     def I(x):
         if x.ndim==1:
             return (0<=x[0]) * (x[0] <= 1) * (0<=x[1]) * (x[1] <= 1)
@@ -119,6 +145,10 @@ def test1():
     Z2 = h2(z).reshape((100,100))
 
 
+    for i in range(8):
+        l = train_step(model, opt, P1)
+        print(f"epoch: {i}  ||  loss: {l}")
+
     plt.figure(figsize=(20, 8))
 
     plt.subplot(1, 2, 1)
@@ -140,3 +170,4 @@ def test1():
 
 
 test1()
+

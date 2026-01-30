@@ -1,5 +1,7 @@
 from integration import *
 from diff import *
+import tensorflow as tf
+
 
 eps = 1e-4
 N = 10000
@@ -28,6 +30,7 @@ class Problem:
 
         return L
 
+    
     def compute_loss(self, h):
         main_loss = mc_int(self.G, lambda x: self.compute_L(h,x)**2 , N)
         boundary_loss = check_boundary_cond(h, self.g, self.G, N)
