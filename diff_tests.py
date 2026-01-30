@@ -95,7 +95,6 @@ def diff_test4():
     b = np.array([-3, -2.])
     n = 4    
 
-
     test_pipline2(f1, 0, dxf1, ddxf1, a, b, n )
     print('*'*30)
     test_pipline2(f1, 1, dyf1, ddyf1, a, b, n )
