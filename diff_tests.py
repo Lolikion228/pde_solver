@@ -21,6 +21,25 @@ def test_pipline1(f1,  df1,  ddf1,  a,  b,  n):
         h /= 10
         print()
     
+def test_pipline2(f1, k, df1,  ddf1,  a,  b,  n):
+    h = 0.1
+    
+    for i in range(6):
+        x = a
+        print("h =", h)
+
+        print("x       ", end="")
+        print("df_delta   ",end="")
+        print("ddf_delta")
+
+        for j in range(n):
+            x = x + (b - a) / n
+            df_delta = abs(df1(x) - pdf(f1, x, k, h))
+            ddf_delta = abs(ddf1(x) - pddf(f1, x, k, h))
+            print(f"{x} {df_delta:>{8}.{4}e} {ddf_delta:>{8}.{4}e}")
+        
+        h /= 10
+        print()
 
 
 def diff_test1():
@@ -49,5 +68,36 @@ def diff_test2():
 
     test_pipline1(f1, df1, ddf1, a, b, n)
 
+def diff_test3():
+    f1 = lambda x: 3 * x[0]**3 * x[1]**4
+    dxf1 = lambda x: 9 * x[0]**2 * x[1]**4
+    ddxf1 = lambda x: 18 * x[0]**1 * x[1]**4
+    dyf1 = lambda x: 12 * x[0]**3 * x[1]**3
+    ddyf1 = lambda x: 36 * x[0]**3 * x[1]**2
+
+    a = np.array([-1., -1])
+    b = np.array([-3, -2.])
+    n = 4    
+
+    test_pipline2(f1, 0, dxf1, ddxf1, a, b, n )
+    test_pipline2(f1, 1, dyf1, ddyf1, a, b, n )
 
 
+def diff_test4():
+    f1 = lambda x: np.sin(x[0])**3 + np.cos(x[1])**4
+    dxf1 = lambda x: 3 * (np.sin(x[0])**2) * np.cos(x[0])
+    ddxf1 = lambda x: 3 * (2*np.sin(x[0])*np.cos(x[0])**2 - np.sin(x[0])**3)
+
+    dyf1 = lambda x: 4 * (np.cos(x[1])**3) * (-np.sin(x[1]))
+    ddyf1 = lambda x: -4 * (-3*np.cos(x[1])**2 * np.sin(x[1])**2 + np.cos(x[1])**4)
+
+    a = np.array([-1., -1])
+    b = np.array([-3, -2.])
+    n = 4    
+
+
+    test_pipline2(f1, 0, dxf1, ddxf1, a, b, n )
+    print('*'*30)
+    test_pipline2(f1, 1, dyf1, ddyf1, a, b, n )
+
+diff_test4()
