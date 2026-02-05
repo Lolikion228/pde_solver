@@ -1,32 +1,19 @@
-import numpy as np 
+import tensorflow as tf
 
-def df(f, x, h):
-    xr = x+h
-    xl = x-h
-    r = f(xr)
-    l = f(xl)
-    return (r - l) / (2 * h)
+def diff(f, x):
+    x = tf.Variable(x, dtype=tf.float32)
+    with tf.GradientTape() as tape:
+        y = f(x)
+    return tape.gradient(y,x)
 
-
-def pdf(f, x, i, h):
-
-    def g(t):
-        x2 = np.copy(x)
-        x2[i] = t
-        return f(x2)
-    
-    return df(g, x[i], h)
-
-
-def ddf(f, x, h):
-    return (f(x + h) - 2 * f(x) + f(x - h)) / (h * h)
+def diff2(f, x):
+    x = tf.Variable(x, dtype=tf.float32)
+    with tf.GradientTape() as tape2:
+        with tf.GradientTape() as tape1:
+            y = f(x)
+        dy = tape1.gradient(y,x)
+    J = tape2.jacobian(dy,x)
+    ddy = tf.linalg.diag_part(J)
+    return ddy
 
 
-def pddf(f, x, i, h):
-
-    def g(t):
-        x2 = x
-        x2[i] = t
-        return f(x2)
-    
-    return ddf(g, x[i], h)
