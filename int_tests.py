@@ -7,70 +7,46 @@ def int_test1():
     x = sample(x1, x2, 3)
     print(x)
 
+# ANS = 1.0
 def int_test2():
+    
     def f(x):
-        if x.ndim==1:
-            return 12 * x[0]**2 * x[1]**3
-        elif x.ndim==2:
-            d = x.shape[0]
-            y = np.zeros(d)
-            for i in range(d):
-                y[i] = 12 * x[i][0]**2 * x[i][1]**3
-            return y
-        else: 
-            raise Exception("aaa")
+        res = 12 * x[:,0]**2 * x[:,1]**3
+        return res
+    
         
     def I(x):
-        if x.ndim==1:
-            return (0<=x[0]) * (x[0] <= 1) * (0<=x[1]) * (x[1] <= 1)
-        elif x.ndim==2:
-            d = x.shape[0]
-            y = np.zeros(d)
-            for i in range(d):
-                y[i] = (0<=x[i][0]) * (x[i][0] <= 1) * (0<=x[i][1]) * (x[i][1] <= 1)
-            return y
-        else:
-            raise Exception("aaaa")
+        I1 = tf.logical_and(0 <= x[:,0], x[:,0] <= 1)
+        I2 = tf.logical_and(0 <= x[:,1], x[:,1] <= 1)
+        R = tf.logical_and(I1, I2)
+        res = tf.cast(R, tf.float64)
+        return res
 
-    x1 = np.array([-1,-1])
-    x2 = np.array([2,2])
-
-    G1 = Domain(x1, x2, I, None)
-
-    print(mc_int(G1, f, 10000))
-
-
-def int_test3():
-    def f(x):
-        if x.ndim==1:
-            return (x[0]**2 + x[1]**2) / np.pi
-        elif x.ndim==2:
-            d = x.shape[0]
-            y = np.zeros(d)
-            for i in range(d):
-                y[i] = (x[i][0]**2 + x[i][1]**2) / np.pi
-            return y
-        else: 
-            raise Exception("aaa")
-        
-    def I(x):
-        if x.ndim==1:
-            return (x[0]**2 + x[1]**2 <= 4) * (x[1]>=0)
-        elif x.ndim==2:
-            d = x.shape[0]
-            y = np.zeros(d)
-            for i in range(d):
-                y[i] = (x[i][0]**2 + x[i][1]**2 <= 4) * (x[i][1]>=0)
-            return y
-        else:
-            raise Exception("aaaa")
-
-    x1 = np.array([-3,-3])
-    x2 = np.array([3,3])
+    x1 = np.array([-1., -1])
+    x2 = np.array([2,    2.])
 
     G1 = Domain(x1, x2, I, None, 1, 1)
 
-    print(mc_int(G1, f, 10000))
+    print(mc_int(G1, f, 100000))
+
+# ANS = 4.0
+def int_test3():
+    def f(x):
+        res = (x[:,0]**2 + x[:,1]**2) / np.pi
+        return res
+        
+    def I(x):
+        y = tf.logical_and(x[:,0]**2 + x[:,1]**2 <= 4, x[:,1]>=0)
+        res = tf.cast(y, dtype=tf.float64)
+        return res
+
+
+    x1 = np.array([-3., -3])
+    x2 = np.array([3.,   3])
+
+    G1 = Domain(x1, x2, I, None, 1, 1)
+
+    print(mc_int(G1, f, 100000))
 
 
 
@@ -168,4 +144,4 @@ def int_test5():
     print(check_boundary_cond(f1, f2, G1, 1000))
 
 
-int_test5()
+int_test3()
