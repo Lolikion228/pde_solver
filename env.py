@@ -3,6 +3,12 @@ from diff import *
 import tensorflow as tf
 
 
+"""
+TODO
+1) make vectorized ver of compute_L
+2) check types in compute_loss
+"""
+
 eps = 1e-4
 N = 10000
 
@@ -10,23 +16,26 @@ class Problem:
 
     def __init__(self, G, g, coefs):
         self.G = G
-        self.g = g 
+        self.g = g #func for bound_cond
         self.coefs = coefs
         
     
     def compute_L(self, f, x):
-        L = 0
-        
-        if self.coefs[0] != None: 
-            L += self.coefs[0](x) * pddf(f, x, 0, eps)
-        if self.coefs[1] != None: 
-            L += self.coefs[1](x) * pddf(f, x, 1, eps)
-        if self.coefs[2] != None: 
-            L += self.coefs[2](x) * pdf(f, x, 0, eps)
-        if self.coefs[3] != None: 
-            L += self.coefs[3](x) * pdf(f, x, 1, eps)
-        if self.coefs[4] != None: 
-            L += self.coefs[4](x) * f(x)
+        L = tf.Variable(0.0)
+
+        df = diff(f, x)
+        ddf = diff2(f, x)
+
+        if "xx" in self.coefs.keys():
+            L += self.coefs["xx"](x) * ddf[0]
+        if "yy" in self.coefs.keys():
+            L += self.coefs["yy"](x) * ddf[1]
+        if "x" in self.coefs.keys():
+            L += self.coefs["x"](x) * df[0]
+        if "y" in self.coefs.keys():
+            L += self.coefs["y"](x) * df[1]
+        if "_" in self.coefs.keys():
+            L += self.coefs["_"](x) * f(x)
 
         return L
 
