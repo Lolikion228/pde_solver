@@ -55,44 +55,19 @@ def int_test4():
     b = 3
 
     def gamma(x):
-        if x.ndim==0:
-            return np.array([x,0]) 
-        elif x.ndim==1:
-            d = x.shape[0]
-            y = np.zeros(shape=(d,2))
-            for i in range(d):
-                y[i] = np.array([x[i],0]) 
-            return y
-        else:
-            raise Exception("aaaa")
-    
-
-
+        res = tf.stack([x, tf.zeros(x.shape[0], dtype=tf.float64)], axis=1)
+        return res
+     
     G1 = Domain(None, None, None, gamma, a, b)
 
     def f1(x):
-        if x.ndim==1:
-            return 2*x[0] + 3*x[1]
-        elif x.ndim==2:
-            d = x.shape[0]
-            y = np.zeros(d)
-            for i in range(d):
-                y[i] = 2*x[i][0] + 3*x[i][1]
-            return y
-        else: 
-            raise Exception("aaa")
+        res = 2*x[:,0] + 33*x[:,1]
+        return res
+ 
 
     def f2(x):
-        if x.ndim==1:
-            return 5*x[0] + 2*x[1]
-        elif x.ndim==2:
-            d = x.shape[0]
-            y = np.zeros(d)
-            for i in range(d):
-                y[i] = 5*x[i][0] + 2*x[i][1]
-            return y
-        else: 
-            raise Exception("aaa")
+        res = 2.2*x[:,0] + 22*x[:,1]
+        return res
         
     print(check_boundary_cond(f1, f2, G1, 10000))
 
@@ -102,46 +77,21 @@ def int_test5():
     b = np.pi / 2
 
     def gamma(x):
-        if x.ndim==0:
-            return np.array([np.cos(x),np.sin(x)]) 
-        elif x.ndim==1:
-            d = x.shape[0]
-            y = np.zeros(shape=(d,2))
-            for i in range(d):
-                y[i] = np.array([np.cos(x[i]),np.sin(x[i])]) 
-            return y
-        else:
-            raise Exception("aaaa")
+        res = tf.stack([tf.cos(x), tf.sin(x)], axis=1) 
+        return res
     
-
-
     G1 = Domain(None, None, None, gamma, a, b)
 
     def f1(x):
-        if x.ndim==1:
-            return x[0]**2.05 + x[1]**2
-        elif x.ndim==2:
-            d = x.shape[0]
-            y = np.zeros(d)
-            for i in range(d):
-                y[i] = x[i][0]**2.05 + x[i][1]**2
-            return y
-        else: 
-            raise Exception("aaa")
+        res = tf.abs(x[:,0])**3.2 + tf.abs(x[:,1])**2.1
+        return res
+       
 
     def f2(x):
-        if x.ndim==1:
-            return x[0]**2.1 + abs(x[1])**2.2
-        elif x.ndim==2:
-            d = x.shape[0]
-            y = np.zeros(d)
-            for i in range(d):
-                y[i] = x[i][0]**2.1 + abs(x[i][1])**2.2
-            return y
-        else: 
-            raise Exception("aaa")
+        res = tf.abs(x[:,0])**3.1 + tf.abs(x[:,1])**2.0
+        return res
         
-    print(check_boundary_cond(f1, f2, G1, 1000))
+    print(check_boundary_cond(f1, f2, G1, 10000))
 
 
-int_test3()
+int_test5()
