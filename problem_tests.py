@@ -56,20 +56,33 @@ def test1():
     def gamma1(t, side_length=1.0):
         cond1 = tf.logical_and(0<=t, t<1)
         x1 = t * side_length
-        y1 = tf.zeros(t.shape)
+        y1 = tf.zeros(t.shape, dtype=tf.float64)
 
         cond2 = tf.logical_and(1<=t, t<2)
-        x2 = tf.ones(t.shape) * side_length
+        x2 = tf.ones(t.shape, dtype=tf.float64) * side_length
         y2 = (t - 1) * side_length
 
         cond3 = tf.logical_and(2<=t, t<3)
         x3 = side_length - (t - 2) * side_length
         y3 = side_length
 
-        cond4 = tf.logical_and(3<=t, t<=4)
-        x = tf.zeros(t.shape)
-        y = side_length - (t - 3) * side_length
+        #cond4 = tf.logical_and(3<=t, t<=4)
+        x4 = tf.zeros(t.shape, dtype=tf.float64)
+        y4 = side_length - (t - 3) * side_length
         
+
+        x = tf.where(cond1, x1,
+                tf.where(cond2, x2,
+                        tf.where(cond3, x3, x4)))
+        y = tf.where(cond1, y1,
+                    tf.where(cond2, y2,
+                            tf.where(cond3, y3, y4)))
+    
+        res = tf.stack([x, y], axis=-1)
+
+        return res
+        
+    
     # def _g(x):
     #     if x[0]==0:
     #         return 0
@@ -83,7 +96,8 @@ def test1():
     def g(x):
         res = tf.where(tf.logical_or(x[:,0] * x[:,1]==0, x[:,0]==1),
                        0.0, 3. * tf.sin(3 * np.pi * x[:,0]) )
-
+        return res
+    
     G1 = Domain(
         np.array([0.,0.]),
         np.array([0.,0.]),
@@ -158,46 +172,46 @@ def test1():
     #         return y
     
     def h2(x):
-        if x.ndim==1:
+        if x.shape.rank==1:
             res = 2. * x[0] + x[1]
-        if x.ndim==2:
+        if x.shape.rank==2:
             res = 2. * x[:,0] + x[:,1]
         return res
         
-    # print(P1.compute_loss(h1))
-    # print(P1.compute_loss(h2))
+    print(P1.compute_loss(h1))
+    print(P1.compute_loss(h2))
     # print(P1.compute_loss(h3))
 
-    x = np.linspace(0, 1, 100)
-    y = np.linspace(0, 1, 100)
-    X, Y = np.meshgrid(x,y)
-    z = np.column_stack((X.reshape(-1), Y.reshape(-1)))
-    Z1 = h1(tf.constant(z, dtype=tf.float64)).numpy().reshape((100,100))
-    Z2 = h2(tf.constant(z, dtype=tf.float64)).numpy().reshape((100,100))
+    # x = np.linspace(0, 1, 100)
+    # y = np.linspace(0, 1, 100)
+    # X, Y = np.meshgrid(x,y)
+    # z = np.column_stack((X.reshape(-1), Y.reshape(-1)))
+    # Z1 = h1(tf.constant(z, dtype=tf.float64)).numpy().reshape((100,100))
+    # Z2 = h2(tf.constant(z, dtype=tf.float64)).numpy().reshape((100,100))
 
 
     # for i in range(8):
     #     l = train_step(model, opt, P1)
     #     print(f"epoch: {i}  ||  loss: {l}")
 
-    plt.figure(figsize=(20, 8))
+    # plt.figure(figsize=(20, 8))
 
-    plt.subplot(1, 2, 1)
-    plt.title("exact solution")
-    contour = plt.contourf(X, Y, Z1, 20, cmap='plasma')
-    plt.colorbar(contour)
-    plt.xlabel('x')
-    plt.ylabel('y')
+    # plt.subplot(1, 2, 1)
+    # plt.title("exact solution")
+    # contour = plt.contourf(X, Y, Z1, 20, cmap='plasma')
+    # plt.colorbar(contour)
+    # plt.xlabel('x')
+    # plt.ylabel('y')
 
-    plt.subplot(1, 2, 2)
-    plt.title("random function")
-    contour = plt.contourf(X, Y, Z2, 20, cmap='plasma')
-    plt.colorbar(contour)
-    plt.xlabel('x')
-    plt.ylabel('y')
+    # plt.subplot(1, 2, 2)
+    # plt.title("random function")
+    # contour = plt.contourf(X, Y, Z2, 20, cmap='plasma')
+    # plt.colorbar(contour)
+    # plt.xlabel('x')
+    # plt.ylabel('y')
 
-    plt.show()
-    plt.close()
+    # plt.show()
+    # plt.close()
 
 
 test1()

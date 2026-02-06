@@ -13,7 +13,10 @@ def diff2(f, x):
             y = f(x)
         dy = tape1.gradient(y,x)
     J = tape2.jacobian(dy,x)
-    ddy = tf.linalg.diag_part(J)
+    if J is None:
+        return tf.zeros(shape=dy.shape, dtype=tf.float64)
+    else:
+        ddy = tf.linalg.diag_part(J)
     return ddy
 
 

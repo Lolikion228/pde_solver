@@ -2,6 +2,8 @@ import tensorflow as tf
 import numpy as np
 # from diff import *
 from integration import *
+from keras import Sequential
+from keras._tf_keras.keras.layers import *
 
 def diff_test1():
     x=[1.2, -2.3]
@@ -29,6 +31,12 @@ def sample_test():
     print(s)
 
 
-sample_test()
+# sample_test()
 
-tf.a
+model = Sequential([
+    Dense(8, activation="tanh"),
+    Dense(32, activation="tanh"),
+    Dense(1,),
+])
+
+

@@ -10,7 +10,7 @@ TODO
 """
 
 eps = 1e-4
-N = 10000
+N = 100
 
 class Problem:
 
@@ -49,7 +49,7 @@ class Problem:
             res = tf.stack(vals)
             return res
         
-        main_loss = mc_int(self.G, integrand, 100)
-        # boundary_loss = check_boundary_cond(h, self.g, self.G, N)
-        return 0.5 * ( main_loss + 0.0 )
+        main_loss = mc_int(self.G, integrand, N)
+        boundary_loss = check_boundary_cond(h, self.g, self.G, N)
+        return 0.5 * ( main_loss + boundary_loss )
         
