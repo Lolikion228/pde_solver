@@ -21,13 +21,13 @@ class Problem:
         
     
     def compute_L(self, f, x):
-        L = tf.Variable(0.0)
+        L = tf.Variable(0.0, dtype=tf.float64)
 
         df = diff(f, x)
         ddf = diff2(f, x)
 
         if "xx" in self.coefs.keys():
-            L += self.coefs["xx"](x) * ddf[0]
+            L = L + self.coefs["xx"](x) * ddf[0]
         if "yy" in self.coefs.keys():
             L += self.coefs["yy"](x) * ddf[1]
         if "x" in self.coefs.keys():
@@ -41,7 +41,15 @@ class Problem:
 
     
     def compute_loss(self, h):
-        main_loss = mc_int(self.G, lambda x: self.compute_L(h,x)**2 , N)
-        boundary_loss = check_boundary_cond(h, self.g, self.G, N)
-        return 0.5 * ( main_loss + boundary_loss )
+
+        def integrand(x):
+            vals = []
+            for i in range(x.shape[0]):
+                vals.append(self.compute_L(h,x[i,:])**2)
+            res = tf.stack(vals)
+            return res
+        
+        main_loss = mc_int(self.G, integrand, 100)
+        # boundary_loss = check_boundary_cond(h, self.g, self.G, N)
+        return 0.5 * ( main_loss + 0.0 )
         
