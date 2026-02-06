@@ -34,6 +34,8 @@ def test1():
         Input(shape=(2,)),
         Dense(16, activation="relu"),
         Dense(128, activation="relu"),
+        Dense(256, activation="relu"),
+        Dense(128, activation="relu"),
         Dense(16, activation="relu"),
         Dense(1, dtype=tf.float32)
     ])
@@ -143,7 +145,7 @@ def test1():
     #     print(P1.compute_loss(h2))
     # print(P1.compute_loss(h3))
 
-    for i in range(4):
+    for i in range(16):
         l = train_step(model, opt, P1)
         print(f"epoch: {i}  ||  loss: {l}")
 
@@ -153,9 +155,6 @@ def test1():
     z = np.column_stack((X.reshape(-1), Y.reshape(-1)))
     Z1 = h1(tf.constant(z, dtype=tf.float32)).numpy().reshape((100,100))
     Z2 = model(tf.constant(z, dtype=tf.float32)).numpy().reshape((100,100))
-
-
-    
 
     plt.figure(figsize=(20, 8))
 
