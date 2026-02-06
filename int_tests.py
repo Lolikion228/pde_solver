@@ -28,6 +28,7 @@ def int_test2():
     G1 = Domain(x1, x2, I, None, 1, 1)
 
     print(mc_int(G1, f, 100000))
+    print(integrate_over_domain(G1, f, 1000))
 
 # ANS = 4.0
 def int_test3():
@@ -47,6 +48,7 @@ def int_test3():
     G1 = Domain(x1, x2, I, None, 1, 1)
 
     print(mc_int(G1, f, 100000))
+    print(integrate_over_domain(G1, f, 1000))
 
 
 
@@ -70,6 +72,7 @@ def int_test4():
         return res
         
     print(check_boundary_cond(f1, f2, G1, 10000))
+    print(check_boundary_cond_tf(f1, f2, G1, 100))
 
 
 def int_test5():
@@ -92,6 +95,6 @@ def int_test5():
         return res
         
     print(check_boundary_cond(f1, f2, G1, 10000))
-
+    print(check_boundary_cond_tf(f1, f2, G1, 100))
 
 int_test5()
