@@ -19,7 +19,7 @@ def int_test2():
         I1 = tf.logical_and(0 <= x[:,0], x[:,0] <= 1)
         I2 = tf.logical_and(0 <= x[:,1], x[:,1] <= 1)
         R = tf.logical_and(I1, I2)
-        res = tf.cast(R, tf.float64)
+        res = tf.cast(R, tf.float32)
         return res
 
     x1 = np.array([-1., -1])
@@ -37,7 +37,7 @@ def int_test3():
         
     def I(x):
         y = tf.logical_and(x[:,0]**2 + x[:,1]**2 <= 4, x[:,1]>=0)
-        res = tf.cast(y, dtype=tf.float64)
+        res = tf.cast(y, dtype=tf.float32)
         return res
 
 
@@ -55,7 +55,7 @@ def int_test4():
     b = 3
 
     def gamma(x):
-        res = tf.stack([x, tf.zeros(x.shape[0], dtype=tf.float64)], axis=1)
+        res = tf.stack([x, tf.zeros(x.shape[0], dtype=tf.float32)], axis=1)
         return res
      
     G1 = Domain(None, None, None, gamma, a, b)

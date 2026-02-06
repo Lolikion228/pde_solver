@@ -10,8 +10,7 @@ remove for loop
 vectorize compute_L
 """
 
-eps = 1e-4
-N = 1000
+N = 10000
 
 class Problem:
 
@@ -22,7 +21,7 @@ class Problem:
         
     
     def compute_L(self, f, x):
-        L = tf.zeros(shape=x.shape[0], dtype=tf.float64)
+        L = tf.zeros(shape=x.shape[0], dtype=tf.float32)
 
         df = diff(f, x)
         ddf = diff2(f, x)
@@ -49,5 +48,5 @@ class Problem:
         
         main_loss = mc_int(self.G, integrand, N)
         boundary_loss = check_boundary_cond(h, self.g, self.G, N)
-        return 0.5 * (main_loss + boundary_loss)
+        return 0.5 * (main_loss + boundary_loss*0)
         
