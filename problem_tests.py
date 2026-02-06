@@ -5,28 +5,46 @@ from keras._tf_keras.keras.layers import *
 from env import *
 import tensorflow as tf
 
-
+class FlexibleSequential(keras.Sequential):
+    def call(self, inputs):
+        # Запоминаем был ли вход ранка 1
+        was_1d = inputs.shape.rank == 1
+        
+        # Добавляем batch dimension если нужно
+        if was_1d:
+            inputs = tf.expand_dims(inputs, axis=0)
+        
+        # Пропускаем через слои
+        outputs = super().call(inputs)
+        
+        # Убираем batch dimension если вход был ранка 1
+        if was_1d:
+            outputs = tf.squeeze(outputs, axis=0)
+        
+        return outputs
 
 def train_step(model, opt, problem):
     with tf.GradientTape() as tape:
         loss = problem.compute_loss(model)
     gradients = tape.gradient(loss, model.trainable_weights)
-    opt.apply_gradients(zip(model.trainable_weights, gradients))
+    grads_and_vars = zip(gradients, model.trainable_weights)
+    opt.apply_gradients(grads_and_vars)
+    # opt.apply_gradients(zip(model.trainable_weights, gradients))
     return loss
 
 
 
 def test1():
 
-    model = keras.Sequential([
+    model = FlexibleSequential([
         Input(shape=(2,)),
         Dense(16, activation="tanh"),
         Dense(64, activation="tanh"),
         Dense(16, activation="tanh"),
-        Dense(1)
+        Dense(1, dtype=tf.float64)
     ])
-
-    opt = keras.optimizers.SGD(1e-3)
+    
+    opt = keras.optimizers.SGD(1e-4)
     
 
     def I(x):
@@ -181,9 +199,9 @@ def test1():
             res = 2. * x[:,0]**2 + x[:,1]**2
         return res
         
-    print(P1.compute_loss(h1))
-    print(P1.compute_loss(h2))
-    print(P1.compute_loss(h3))
+    # print(P1.compute_loss(h1))
+    # print(P1.compute_loss(h2))
+    # print(P1.compute_loss(h3))
 
     # x = np.linspace(0, 1, 100)
     # y = np.linspace(0, 1, 100)
@@ -193,9 +211,9 @@ def test1():
     # Z2 = h2(tf.constant(z, dtype=tf.float64)).numpy().reshape((100,100))
 
 
-    # for i in range(8):
-    #     l = train_step(model, opt, P1)
-    #     print(f"epoch: {i}  ||  loss: {l}")
+    for i in range(8):
+        l = train_step(model, opt, P1)
+        print(f"epoch: {i}  ||  loss: {l}")
 
     # plt.figure(figsize=(20, 8))
 
