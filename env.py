@@ -3,14 +3,8 @@ from diff import *
 import tensorflow as tf
 
 
-"""
-TODO
-1) why mc_int is so slow?
-remove for loop
-vectorize compute_L
-"""
 
-N = 10000
+N = 10_000
 
 class Problem:
 
@@ -46,7 +40,8 @@ class Problem:
             # x shape: (N, 2)
             return self.compute_L(h, x)**2  # shape: (N,)
         
-        main_loss = mc_int(self.G, integrand, N)
-        boundary_loss = check_boundary_cond(h, self.g, self.G, N)
+        main_loss = integrate_over_domain(self.G, integrand, 100)
+        boundary_loss = check_boundary_cond_tf(h, self.g, self.G, 100)
+
         return 0.5 * (main_loss + boundary_loss)
         

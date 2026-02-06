@@ -31,17 +31,17 @@ def train_step(model, opt, problem):
 def test1():
 
     model = FlexibleSequential([
-        Input(shape=(2,)),
         Dense(16, activation="relu"),
+        Dense(64, activation="relu"),
         Dense(128, activation="relu"),
-        Dense(256, activation="relu"),
         Dense(128, activation="relu"),
+        Dense(64, activation="relu"),
         Dense(16, activation="relu"),
         Dense(1, dtype=tf.float32)
     ])
     
-    opt = keras.optimizers.SGD(1e-5)
-    
+    opt = keras.optimizers.SGD(1e-3)
+
 
     def I(x):
         I1 = tf.logical_and(0 <= x[:,0], x[:,0] <= 1)
@@ -87,8 +87,8 @@ def test1():
         return tf.cast(res,dtype=tf.float32)
     
     G1 = Domain(
-        np.array([-1.1, -1.1]),
-        np.array([1.5, 1.1]),
+        np.array([-0.1, -0.1]),
+        np.array([1.1, 1.1]),
         I,
         gamma1,
         a=0,
@@ -141,11 +141,11 @@ def test1():
 
     # print("here")
     # print(P1.compute_loss(h1))
-    # for i in range(16):
-    #     print(P1.compute_loss(h2))
+    # print(P1.compute_loss(h2))
     # print(P1.compute_loss(h3))
 
-    for i in range(16):
+
+    for i in range(1280):
         l = train_step(model, opt, P1)
         print(f"epoch: {i}  ||  loss: {l}")
 
