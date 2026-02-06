@@ -10,7 +10,7 @@ TODO
 """
 
 eps = 1e-4
-N = 100
+N = 4
 
 class Problem:
 
@@ -29,13 +29,13 @@ class Problem:
         if "xx" in self.coefs.keys():
             L = L + self.coefs["xx"](x) * ddf[0]
         if "yy" in self.coefs.keys():
-            L += self.coefs["yy"](x) * ddf[1]
+            L = L + self.coefs["yy"](x) * ddf[1]
         if "x" in self.coefs.keys():
-            L += self.coefs["x"](x) * df[0]
+            L = L + self.coefs["x"](x) * df[0]
         if "y" in self.coefs.keys():
-            L += self.coefs["y"](x) * df[1]
+            L = L + self.coefs["y"](x) * df[1]
         if "_" in self.coefs.keys():
-            L += self.coefs["_"](x) * f(x)
+            L = L + self.coefs["_"](x) * f(x)
 
         return L
 
@@ -51,5 +51,5 @@ class Problem:
         
         main_loss = mc_int(self.G, integrand, N)
         boundary_loss = check_boundary_cond(h, self.g, self.G, N)
-        return 0.5 * ( main_loss + boundary_loss )
+        return 0.5 * (main_loss + boundary_loss )
         

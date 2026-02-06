@@ -99,8 +99,8 @@ def test1():
         return res
     
     G1 = Domain(
-        np.array([0.,0.]),
-        np.array([0.,0.]),
+        np.array([-1.,-1.]),
+        np.array([1.,1.]),
         I,
         gamma1,
         a=0,
@@ -128,7 +128,6 @@ def test1():
     #         return y
     
     def h1(x):
-        # print("assa",x)
         if x.shape.rank==1:
             res = tf.constant(3, dtype=tf.float64) \
                   / tf.sinh(tf.cast(3. * np.pi,dtype=tf.float64)) \
@@ -152,12 +151,16 @@ def test1():
     #         return y
     
     def h3(x):
-        if x.ndim==1:
-            res = 5 / tf.sinh(3 * np.pi) * tf.sin(10 * np.pi * x[0]) \
-                * tf.sinh(3 * np.pi * x[1])
-        if x.ndim==2:
-            res = 5 / tf.sinh(3 * np.pi) * tf.sin(10 * np.pi * x[:,0]) \
-                * tf.sinh(3 * np.pi * x[:,1])
+        if x.shape.rank==1:
+            res = tf.constant(5, dtype=tf.float64) \
+                  / tf.sinh(tf.cast(16. * np.pi,dtype=tf.float64)) \
+                  * tf.sin(10 * np.pi * x[0]) \
+                  * tf.sinh(16 * np.pi * x[1])
+        if x.shape.rank==2:
+            res = tf.constant(5, dtype=tf.float64) \
+                  / tf.sinh(tf.cast(16. * np.pi,dtype=tf.float64)) \
+                  * tf.sin(10 * np.pi * x[:,0]) \
+                  * tf.sinh(16 * np.pi * x[:,1])
         return res
         
         
@@ -173,14 +176,14 @@ def test1():
     
     def h2(x):
         if x.shape.rank==1:
-            res = 2. * x[0] + x[1]
+            res = 2. * x[0]**2 + x[1]**2
         if x.shape.rank==2:
-            res = 2. * x[:,0] + x[:,1]
+            res = 2. * x[:,0]**2 + x[:,1]**2
         return res
         
     print(P1.compute_loss(h1))
     print(P1.compute_loss(h2))
-    # print(P1.compute_loss(h3))
+    print(P1.compute_loss(h3))
 
     # x = np.linspace(0, 1, 100)
     # y = np.linspace(0, 1, 100)
