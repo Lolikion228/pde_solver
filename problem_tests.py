@@ -7,17 +7,13 @@ import tensorflow as tf
 
 class FlexibleSequential(keras.Sequential):
     def call(self, inputs):
-        # Запоминаем был ли вход ранка 1
         was_1d = inputs.shape.rank == 1
         
-        # Добавляем batch dimension если нужно
         if was_1d:
             inputs = tf.expand_dims(inputs, axis=0)
         
-        # Пропускаем через слои
         outputs = super().call(inputs)
-        
-        # Убираем batch dimension если вход был ранка 1
+
         if was_1d:
             outputs = tf.squeeze(outputs, axis=0)
         
@@ -29,9 +25,7 @@ def train_step(model, opt, problem):
     gradients = tape.gradient(loss, model.trainable_weights)
     grads_and_vars = zip(gradients, model.trainable_weights)
     opt.apply_gradients(grads_and_vars)
-    # opt.apply_gradients(zip(model.trainable_weights, gradients))
     return loss
-
 
 
 def test1():
@@ -53,23 +47,7 @@ def test1():
         R = tf.logical_and(I1, I2)
         res = tf.cast(R, tf.float64)
         return res
-
-
-    # def _gamma1(t, side_length=1.0):
-    #     if 0 <= t < 1: 
-    #         x = t * side_length
-    #         y = 0.0
-    #     elif 1 <= t < 2: 
-    #         x = side_length
-    #         y = (t - 1) * side_length
-    #     elif 2 <= t < 3:  
-    #         x = side_length - (t - 2) * side_length
-    #         y = side_length
-    #     else: 
-    #         x = 0.0
-    #         y = side_length - (t - 3) * side_length
-        
-    #     return np.array([x, y])
+    
 
     def gamma1(t, side_length=1.0):
         cond1 = tf.logical_and(0<=t, t<1)
@@ -100,16 +78,6 @@ def test1():
 
         return res
         
-    
-    # def _g(x):
-    #     if x[0]==0:
-    #         return 0
-    #     if x[0]==1:
-    #         return 0
-    #     if x[1]==0:
-    #         return 0
-    #     if x[1]==1:
-    #         return 3 * np.sin(3*np.pi*x[0])
 
     def g(x):
         res = tf.where(tf.logical_or(x[:,0] * x[:,1]==0, x[:,0]==1),
@@ -134,16 +102,6 @@ def test1():
     coefs = {"xx": c1, "yy":c2}
 
     P1 = Problem(G1, g, coefs)
-
-    # def h1(x):
-    #     if x.ndim==1:
-    #         return 3 / np.sinh(4 * np.pi) * np.sin(4 * np.pi * x[0]) * np.sinh(7 * np.pi * x[1])
-    #     elif x.ndim==2:
-    #         d = x.shape[0]
-    #         y = np.zeros(d)
-    #         for i in range(d):
-    #             y[i] = 3 / np.sinh(3 * np.pi) * np.sin(3 * np.pi * x[i][0]) * np.sinh(3 * np.pi * x[i][1])
-    #         return y
     
     def h1(x):
         if x.shape.rank==1:
@@ -158,15 +116,12 @@ def test1():
                   * tf.sinh(3 * np.pi * x[:,1])
         return res
 
-    # def h3(x):
-    #     if x.ndim==1:
-    #         return 4.01 / np.sinh(6 * np.pi) * np.sin(5 * np.pi * x[0]) * np.sinh(4 * np.pi * x[1])
-    #     elif x.ndim==2:
-    #         d = x.shape[0]
-    #         y = np.zeros(d)
-    #         for i in range(d):
-    #             y[i] = 5.01 / np.sinh(16 * np.pi) * np.sin(10 * np.pi * x[i][0]) * np.sinh(4 * np.pi * x[i][1])
-    #         return y
+    def h2(x):
+        if x.shape.rank==1:
+            res = 2. * x[0]**2 + x[1]**2
+        if x.shape.rank==2:
+            res = 2. * x[:,0]**2 + x[:,1]**2
+        return res
     
     def h3(x):
         if x.shape.rank==1:
@@ -181,23 +136,8 @@ def test1():
                   * tf.sinh(16 * np.pi * x[:,1])
         return res
         
-        
-    # def h2(x):
-    #     if x.ndim==1:
-    #         return 2 * x[0] + x[1]
-    #     elif x.ndim==2:
-    #         d = x.shape[0]
-    #         y = np.zeros(d)
-    #         for i in range(d):
-    #             y[i] = 2*x[i][0] + x[i][1]
-    #         return y
     
-    def h2(x):
-        if x.shape.rank==1:
-            res = 2. * x[0]**2 + x[1]**2
-        if x.shape.rank==2:
-            res = 2. * x[:,0]**2 + x[:,1]**2
-        return res
+    
         
     # print(P1.compute_loss(h1))
     # print(P1.compute_loss(h2))
