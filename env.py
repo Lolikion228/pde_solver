@@ -5,12 +5,13 @@ import tensorflow as tf
 
 """
 TODO
-1) make vectorized ver of compute_L
-2) check types in compute_loss
+1) why mc_int is so slow?
+remove for loop
+vectorize compute_L
 """
 
 eps = 1e-4
-N = 4
+N = 1000
 
 class Problem:
 
@@ -21,19 +22,19 @@ class Problem:
         
     
     def compute_L(self, f, x):
-        L = tf.Variable(0.0, dtype=tf.float64)
+        L = tf.zeros(shape=x.shape[0], dtype=tf.float64)
 
         df = diff(f, x)
         ddf = diff2(f, x)
 
         if "xx" in self.coefs.keys():
-            L = L + self.coefs["xx"](x) * ddf[0]
+            L = L + self.coefs["xx"](x) * ddf[:,0]
         if "yy" in self.coefs.keys():
-            L = L + self.coefs["yy"](x) * ddf[1]
+            L = L + self.coefs["yy"](x) * ddf[:,1]
         if "x" in self.coefs.keys():
-            L = L + self.coefs["x"](x) * df[0]
+            L = L + self.coefs["x"](x) * df[:,0]
         if "y" in self.coefs.keys():
-            L = L + self.coefs["y"](x) * df[1]
+            L = L + self.coefs["y"](x) * df[:,1]
         if "_" in self.coefs.keys():
             L = L + self.coefs["_"](x) * f(x)
 
@@ -43,13 +44,10 @@ class Problem:
     def compute_loss(self, h):
 
         def integrand(x):
-            vals = []
-            for i in range(x.shape[0]):
-                vals.append(self.compute_L(h,x[i,:])**2)
-            res = tf.stack(vals)
-            return res
+            # x shape: (N, 2)
+            return self.compute_L(h, x)**2  # shape: (N,)
         
         main_loss = mc_int(self.G, integrand, N)
         boundary_loss = check_boundary_cond(h, self.g, self.G, N)
-        return 0.5 * (main_loss + boundary_loss )
+        return 0.5 * (main_loss + boundary_loss)
         

@@ -34,6 +34,8 @@ def test1():
         Input(shape=(2,)),
         Dense(16, activation="tanh"),
         Dense(64, activation="tanh"),
+        Dense(256, activation="tanh"),
+        Dense(64, activation="tanh"),
         Dense(16, activation="tanh"),
         Dense(1, dtype=tf.float64)
     ])
@@ -94,10 +96,10 @@ def test1():
     )
 
     def c1(x):
-        return tf.constant(1., dtype=tf.float64)
+        return tf.ones(shape=x.shape[0], dtype=tf.float64)
     
     def c2(x):
-        return tf.constant(1., dtype=tf.float64)
+        return tf.ones(shape=x.shape[0], dtype=tf.float64)
     
     coefs = {"xx": c1, "yy":c2}
 
@@ -125,20 +127,19 @@ def test1():
     
     def h3(x):
         if x.shape.rank==1:
-            res = tf.constant(5, dtype=tf.float64) \
-                  / tf.sinh(tf.cast(16. * np.pi,dtype=tf.float64)) \
-                  * tf.sin(10 * np.pi * x[0]) \
-                  * tf.sinh(16 * np.pi * x[1])
+            res = tf.constant(2, dtype=tf.float64) \
+                  / tf.sinh(tf.cast(6. * np.pi,dtype=tf.float64)) \
+                  * tf.sin(4 * np.pi * x[0]) \
+                  * tf.sinh(6 * np.pi * x[1])
         if x.shape.rank==2:
-            res = tf.constant(5, dtype=tf.float64) \
-                  / tf.sinh(tf.cast(16. * np.pi,dtype=tf.float64)) \
-                  * tf.sin(10 * np.pi * x[:,0]) \
-                  * tf.sinh(16 * np.pi * x[:,1])
+            res = tf.constant(2, dtype=tf.float64) \
+                  / tf.sinh(tf.cast(6. * np.pi,dtype=tf.float64)) \
+                  * tf.sin(4 * np.pi * x[:,0]) \
+                  * tf.sinh(6 * np.pi * x[:,1])
         return res
         
-    
-    
-        
+
+    # print("here")
     # print(P1.compute_loss(h1))
     # print(P1.compute_loss(h2))
     # print(P1.compute_loss(h3))
@@ -151,7 +152,7 @@ def test1():
     # Z2 = h2(tf.constant(z, dtype=tf.float64)).numpy().reshape((100,100))
 
 
-    for i in range(8):
+    for i in range(16):
         l = train_step(model, opt, P1)
         print(f"epoch: {i}  ||  loss: {l}")
 
